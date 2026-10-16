@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>مملكة الرماد — الحلقة الأولى</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#080910;color:#f7eee9;font-family:Tahoma,Arial,sans-serif;text-align:center}
+header{padding:14px;background:#17111e;border-bottom:1px solid #74404b}h1{margin:4px;color:#f2ac88;font-size:clamp(24px,4vw,36px)}
+#scene{height:min(55vh,470px);min-height:300px;position:relative;overflow:hidden;background:linear-gradient(#10152b,#53283b 72%,#171018);display:flex;align-items:center;justify-content:center}
+.moon{position:absolute;top:30px;right:13%;width:68px;height:68px;border-radius:50%;background:#f5d9c1;box-shadow:0 0 42px #ffbd9c77}
+.castle{position:absolute;bottom:0;font-size:clamp(85px,16vw,145px);opacity:.52}
+#char{font-size:clamp(75px,15vw,120px);z-index:2;filter:drop-shadow(0 0 16px #ff9c6d33);animation:float 2.5s ease-in-out infinite}
+@keyframes float{50%{transform:translateY(-10px)}}.ash{position:absolute;width:4px;height:4px;background:#ffbf9a;border-radius:50%;bottom:-8px;animation:rise linear infinite;opacity:.7}
+@keyframes rise{to{transform:translateY(-480px) translateX(35px);opacity:0}}
+#meta{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;padding:10px;color:#b9aaba;font-size:13px}
+#speaker{color:#ffb18b;font-size:22px;margin-top:8px}#dialogue{max-width:900px;min-height:100px;margin:0 auto;padding:15px 22px;font-size:clamp(17px,2.6vw,22px);line-height:1.9}
+.controls{display:flex;justify-content:center;gap:8px;flex-wrap:wrap;padding:8px}button,select{border:0;border-radius:8px;padding:11px 14px;font-size:15px}
+button{background:#963e50;color:white;cursor:pointer}button.secondary{background:#302a3b}select{background:#211b2b;color:white;margin:4px}
+#status{color:#b6a8bd;padding:8px;font-size:13px}.progress{height:5px;background:#282131}.progress div{height:100%;width:0;background:#e89a79;transition:width .3s}footer{color:#8e8496;font-size:12px;padding:12px}
+</style></head>
+<body>
+<header><h1>مملكة الرماد</h1><div>الحلقة الأولى: الأمير الأخير</div></header>
+<div class="progress"><div id="bar"></div></div>
+<div id="scene"><div class="moon"></div><div class="castle">🏰</div><div id="char">🧙🏻‍♂️</div></div>
+<div id="meta"><span id="sceneCount">المشهد 1 من 30</span><span>المدة المستهدفة: 10 دقائق تقريبًا</span><span id="clock">00:00 / 10:00</span></div>
+<div id="speaker">آدم — البطل</div><div id="dialogue">في ليلةٍ غطّى فيها الرماد سماء المملكة، استيقظ وريثٌ لا يعرف سرّ دمه.</div>
+<div class="controls"><button onclick="play()">▶ ابدأ الحلقة</button><button class="secondary" onclick="pause()">⏸ إيقاف مؤقت</button><button class="secondary" onclick="next()">⏭ المشهد التالي</button><button class="secondary" onclick="restart()">↻ من البداية</button></div>
+<div><label for="who">الشخصية:</label><select id="who" onchange="updateVoiceList()"><option value="adam">آدم — البطل</option><option value="lian">ليان — البطلة</option><option value="villain">ملك الظلال</option><option value="sage">الحكيم</option><option value="raad">رعد — المحارب</option></select>
+<select id="voice" aria-label="الصوت المتاح"></select><button class="secondary" onclick="assignVoice()">تعيين الصوت للشخصية</button><button class="secondary" onclick="testVoice()">تجربة الصوت</button></div>
+<div id="status">حمّلي الصفحة وانتظري تحميل الأصوات المتاحة على جهازك.</div>
+<footer>ملاحظة: الرسوم هنا نموذج متحرك بسيط. الأصوات تعتمد على المتاح في الجهاز، وقد لا توجد خمسة أصوات عربية مختلفة.</footer>
+<script>
+const cast={
+ adam:{name:"آدم",icon:"🧙🏻‍♂️",pitch:.88,rate:.9,voice:null},
+ lian:{name:"ليان",icon:"👩🏻‍🦰",pitch:1.18,rate:.98,voice:null},
+ villain:{name:"ملك الظلال",icon:"👹",pitch:.58,rate:.82,voice:null},
+ sage:{name:"الحكيم",icon:"👴🏻",pitch:.72,rate:.8,voice:null},
+ raad:{name:"رعد",icon:"⚔️",pitch:.95,rate:1.02,voice:null}
+};
+const scenes=[
+["sage","قبل ألف عام، سقطت نجمة سوداء فوق المملكة، ومن رمادها خرج بابٌ لا ينبغي لأحد أن يفتحه."],
+["sage","قالت النبوءة إن وريث العرش وحده يستطيع إغلاق الباب، لكن الثمن سيكون أغلى مما يتخيل."],
+["adam","أنا آدم. لم أعرف أبي قط، ولم أملك من الماضي سوى قلادة تركتها أمي قبل رحيلها."],
+["adam","في كل ليلة أسمع صوتًا يناديني من خلف الجبال، واليوم قررت أن أعرف الحقيقة."],
+["lian","آدم! انتظرني! لن أسمح لك بالذهاب إلى القلعة وحدك."],
+["adam","ليان؟ الطريق خطر، والجنود يقولون إن القرية كلها اختفت قرب الغابة."],
+["lian","لهذا بالضبط لن أتركك. رأيت الرماد يتحرك كأنه حي، وسمعت أسماءنا بين الأشجار."],
+["raad","توقفا! الطريق إلى القلعة مغلق بأمر الحرس الملكي."],
+["adam","رعد، أنا لا أطلب إذنًا. أريد أن أعرف لماذا تحمل قلادتي شعار العائلة الملكية."],
+["raad","هذا الشعار اختفى يوم احترق القصر. من أين حصلت عليه؟"],
+["adam","أمي أعطتني إياه، وقالت إن عليّ البحث عن الحقيقة عندما يعود القمر الأحمر."],
+["raad","إذن وصل القمر الأحمر بالفعل... كنت أتمنى ألا يأتي هذا اليوم أبدًا."],
+["lian","أنت تعرف شيئًا، أليس كذلك؟ قل لنا ما الذي حدث للقصر."],
+["raad","كنت طفلًا حين هاجم الظل الملك. رأيت الملك يفتح بوابة تحت العرش، ثم ابتلع اللهب كل شيء."],
+["villain","كم هو مؤثر أن أسمع حكاية قديمة تُروى من جديد. لكن بعض الشهود كان يجب أن يموتوا."],
+["adam","أظهر نفسك! لن أسمح لك بإيذاء أصدقائي."],
+["villain","أنا ملك الظلال، آخر من تذكّر وجه أبيك. وأنت تحمل في دمك المفتاح الذي أحتاجه."],
+["lian","لا تستمع إليه يا آدم! إنه يحاول أن يجعلك تخاف."],
+["villain","الخوف؟ أنا لا أحتاج خوفه. يكفيني أن يقترب من البوابة بإرادته."],
+["raad","احموا أنفسكم!"],
+["adam","ما هذا الضوء في قلادتي؟ أشعر كأن شيئًا يستيقظ داخلي!"],
+["sage","آدم، اسمعني جيدًا. لا تستخدم القوة التي في القلادة وأنت غاضب؛ فالظلال تتغذى على الغضب."],
+["adam","من أنت؟ كيف وصلت إلى هنا؟"],
+["sage","أنا حارس آخر أسرار الملك. حملت وعدًا لأمك أن أحميك حتى تختار مصيرك بنفسك."],
+["lian","إذن أخبرنا كيف نوقف ملك الظلال."],
+["sage","البوابة لا تُغلق بالسيف وحده. يجب أن يصل وريث العرش إلى قلب القلعة ويواجه الحقيقة."],
+["raad","سأفتح الطريق. لكن عندما تبدأ المعركة، لا تنتظروا مني أن أعود."],
+["adam","لن يواجه أحد هذا الظلام وحده. نحن فريق واحد، وسنصل إلى قلب القلعة معًا."],
+["villain","تعال يا وريث العرش. افتح الباب، واكتشف من الذي خان مملكتك حقًا."],
+["adam","لن أهرب من ماضيّ. سأدخل القلعة، لكنني سأختار بنفسي ما سيحدث للمملكة."]
+];
+let index=0,running=false,startedAt=0,elapsedBefore=0,voices=[],ctx=null,sceneTimer=null;
+const sceneMs=20000;
+function arabicVoices(){return voices.filter(v=>v.lang&&v.lang.toLowerCase().startsWith("ar"))}
+function updateVoiceList(){const sel=document.getElementById("voice");sel.innerHTML="";const ar=arabicVoices(),list=ar.length?ar:voices;if(!list.length){sel.add(new Option("لا توجد أصوات متاحة",""));return}list.forEach((v,i)=>sel.add(new Option(v.name+" ("+v.lang+")",String(i))))}
+function loadVoices(){if(!("speechSynthesis"in window)){document.getElementById("status").textContent="النطق غير مدعوم في هذا المتصفح.";return}voices=speechSynthesis.getVoices();updateVoiceList();document.getElementById("status").textContent=voices.length?"تم تحميل "+voices.length+" صوتًا متاحًا.":"لم تظهر أصوات بعد؛ جرّبي Chrome على الكمبيوتر."}
+function assignVoice(){const key=document.getElementById("who").value,ar=arabicVoices(),list=ar.length?ar:voices,v=list[Number(document.getElementById("voice").value)];if(v){cast[key].voice=v;document.getElementById("status").textContent="تم تعيين "+v.name+" لشخصية "+cast[key].name}}
+function render(){const [key,line]=scenes[index],c=cast[key];document.getElementById("char").textContent=c.icon;document.getElementById("speaker").textContent=c.name;document.getElementById("dialogue").textContent=line;document.getElementById("sceneCount").textContent="المشهد "+(index+1)+" من "+scenes.length;document.getElementById("bar").style.width=((index+1)/scenes.length*100)+"%";document.getElementById("scene").style.background=key==="villain"?"linear-gradient(#08070f,#4c1428 72%,#100910)":key==="lian"?"linear-gradient(#10182d,#31516c 72%,#171018)":"linear-gradient(#10152b,#53283b 72%,#171018)"}
+function speakCurrent(){return new Promise(resolve=>{if(!("speechSynthesis"in window)){resolve();return}speechSynthesis.cancel();const [key,line]=scenes[index],c=cast[key],u=new SpeechSynthesisUtterance(line);u.lang=c.voice?c.voice.lang:"ar";if(c.voice)u.voice=c.voice;u.pitch=c.pitch;u.rate=c.rate;u.volume=1;u.onend=resolve;u.onerror=resolve;speechSynthesis.speak(u);soundEffect()})}
+function soundEffect(){try{ctx=ctx||new(window.AudioContext||window.webkitAudioContext)();if(ctx.state==="suspended")ctx.resume();const o=ctx.createOscillator(),g=ctx.createGain();o.type="triangle";o.frequency.value=cast[scenes[index][0]].pitch<.7?75:190;g.gain.setValueAtTime(.025,ctx.currentTime);g.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+.6);o.connect(g);g.connect(ctx.destination);o.start();o.stop(ctx.currentTime+.6)}catch(e){}}
+function updateClock(){const seconds=Math.min(600,Math.floor(elapsedBefore+(running?(Date.now()-startedAt)/1000:0)));document.getElementById("clock").textContent=String(Math.floor(seconds/60)).padStart(2,"0")+":"+String(seconds%60).padStart(2,"0")+" / 10:00";if(running)requestAnimationFrame(updateClock)}
+async function play(){if(running)return;running=true;startedAt=Date.now();updateClock();while(running&&index<scenes.length){render();const before=Date.now();await speakCurrent();if(!running)break;const spent=Date.now()-before;await new Promise(resolve=>{sceneTimer=setTimeout(resolve,Math.max(0,sceneMs-spent))});if(!running)break;index++}if(index>=scenes.length&&running){running=false;elapsedBefore=600;document.getElementById("speaker").textContent="نهاية الحلقة الأولى";document.getElementById("dialogue").textContent="يتبع في الحلقة القادمة... أسرار القلعة لم تُكشف بعد.";document.getElementById("char").textContent="🌑";document.getElementById("status").textContent="انتهت المشاهد المكتوبة. مدة المشاهد تقارب 10 دقائق."}}
+function pause(){if(running)elapsedBefore+=Math.min(600,(Date.now()-startedAt)/1000);running=false;clearTimeout(sceneTimer);if("speechSynthesis"in window)speechSynthesis.cancel();document.getElementById("status").textContent="تم الإيقاف مؤقتًا."}
+function next(){pause();index=Math.min(index+1,scenes.length-1);render()}
+function restart(){pause();index=0;elapsedBefore=0;render();play()}
+function testVoice(){const key=document.getElementById("who").value,c=cast[key];if("speechSynthesis"in window){speechSynthesis.cancel();const u=new SpeechSynthesisUtterance("أنا "+c.name+". هذا هو الصوت المخصص لشخصيتي.");u.lang=c.voice?c.voice.lang:"ar";if(c.voice)u.voice=c.voice;u.pitch=c.pitch;u.rate=c.rate;speechSynthesis.speak(u)}}
+for(let j=0;j<45;j++){const a=document.createElement("i");a.className="ash";a.style.right=Math.random()*100+"%";a.style.animationDuration=(4+Math.random()*6)+"s";a.style.animationDelay=Math.random()*6+"s";document.getElementById("scene").appendChild(a)}
+if("speechSynthesis"in window){loadVoices();speechSynthesis.onvoiceschanged=loadVoices}render();
+</script></body></html>
